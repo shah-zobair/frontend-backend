@@ -1,0 +1,143 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: frontend-backend
+metadata:
+  annotations:
+    description: Template for deploying Apache and MariaDB on RHEL
+    iconClass: icon-mysql-database
+    tags: quickstart,oracle
+  name: frontend-backend
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: ${NAME}-frontend
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${NAME}-frontend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}-frontend
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: ${NAME}-frontend
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: ${NAME}-frontend
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: ${NAME}-frontend
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}-frontend
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${NAME}-frontend
+        name: ${NAME}-frontend
+      spec:
+        containers:
+        - env:
+          - name: SERVICE_NAME
+            value: ${SERVICE_NAME}-frontend
+          image: docker-registry.default.svc:5000/openshift/frontend
+          imagePullPolicy: IfNotPresent
+          name: frontend
+          ports:
+          - containerPort: 8080
+            name: web
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: backend
+  spec:
+    ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+    selector:
+      name: ${NAME}-backend
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: ${NAME}-backend
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: ${NAME}-backend
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}-backend
+    strategy:
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          name: ${NAME}-backend
+        name: ${NAME}-backend
+      spec:
+        containers:
+        - env:
+          - name: SERVICE_NAME
+            value: ${SERVICE_NAME}-backend
+          image: docker-registry.default.svc:5000/openshift/backend
+          imagePullPolicy: IfNotPresent
+          name: backend
+          ports:
+          - containerPort: 3306
+            name: web
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  value: aci
+- description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  value: 1024Mi
+- description: The exposed hostname that will route to the Application service, if
+    left blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
