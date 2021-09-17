@@ -16,19 +16,28 @@ cd frontend
 docker build -t frontend .
 docker tag frontend docker-registry.default.svc:5000/openshift/frontend
 
+docker tag frontend default-route-openshift-image-registry.apps.ocp48a.lab.upshift.rdu2.redhat.com/openshift/frontend
+
 cd ../backend
 docker build -t backend .
-docker tag frontend docker-registry.default.svc:5000/openshift/backend
+docker tag backend docker-registry.default.svc:5000/openshift/backend
+
+docker tag backend default-route-openshift-image-registry.apps.ocp48a.lab.upshift.rdu2.redhat.com/openshift/backend
 ```
 3. Log in as a user other than system:admin which has image pusher role:
 ```
 oc login -u <user-name> -p
 docker login -u <user-name> -p $(oc whoami -t) docker-registry.default.svc:5000
+
+docker login default-route-openshift-image-registry.apps.ocp48a.lab.upshift.rdu2.redhat.com -u <user-name> -p $(oc whoami -t)
 ```
 4. Push both images into OpenShift registry:
 ```
 docker push docker-registry.default.svc:5000/openshift/frontend
 docker push docker-registry.default.svc:5000/openshift/backend
+
+docker push default-route-openshift-image-registry.apps.ocp48a.lab.upshift.rdu2.redhat.com/openshift/frontend
+docker push default-route-openshift-image-registry.apps.ocp48a.lab.upshift.rdu2.redhat.com/openshift/backend
 ```
 
 5. Create a new project, create the template and deploy the application:
