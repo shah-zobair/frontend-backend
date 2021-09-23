@@ -48,6 +48,7 @@ objects:
   metadata:
     annotations:
       description: Defines how to deploy the application server
+      sidecar.istio.io/inject: "true"
     name: ${NAME}-frontend
   spec:
     replicas: 1
@@ -102,6 +103,7 @@ objects:
   metadata:
     annotations:
       description: Defines how to deploy the application server
+      sidecar.istio.io/inject: "true"
     name: ${NAME}-backend
   spec:
     replicas: 1

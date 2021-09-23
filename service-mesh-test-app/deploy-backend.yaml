@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        #sidecar.istio.io/inject: "true"
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: image-registry.openshift-image-registry.svc:5000/openshift/backend
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SERVICE_NAME
+          value: backend
+        ports:
+        - containerPort: 3306
+          name: db
+        resources:
+          limits:
+            memory: 500Mi
+            cpu: 500m
+          request:
+            memory: 100Mi
+            cpu: 100m
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: backend
+    service: backend
+spec:
+  ports:
+  - port: 3306
+    name: db
+    targetPort: 3306
+  selector:
+    app: backend
+  sessionAffinity: None
+  type: ClusterIP
