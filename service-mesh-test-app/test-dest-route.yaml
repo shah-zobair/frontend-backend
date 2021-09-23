@@ -5,10 +5,10 @@ metadata:
 spec:
   host: frontend
 
----
-apiVersion: networking.istio.io/v1alpha3
-kind: DestinationRule
-metadata:
-  name: backend
-spec:
-  host: backend
+#---
+#apiVersion: networking.istio.io/v1alpha3
+#kind: DestinationRule
+#metadata:
+#  name: backend
+#spec:
+#  host: backend

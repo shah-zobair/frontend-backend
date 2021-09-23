@@ -34,36 +34,36 @@ spec:
         port:
           number: 80
 
+#---
+#apiVersion: networking.istio.io/v1alpha3
+#kind: Gateway
+#metadata:
+#  name: db-gateway
+#spec:
+#  selector:
+#    istio: ingressgateway # use istio default controller
+#  servers:
+#  - port:
+#      number: 3360
+#      name: db
+#      protocol: TCP
+#    hosts:
+#    - "*"
 ---
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: db-gateway
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-  servers:
-  - port:
-      number: 3360
-      name: db
-      protocol: TCP
-    hosts:
-    - "*"
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: db
-spec:
-  hosts:
-  - "*"
-  gateways:
-  - db-gateway
-  tcp:
-  - match:
-    - port: 3306
-    route:
-    - destination:
-        host: backend
-        port:
-          number: 3306
+#apiVersion: networking.istio.io/v1alpha3
+#kind: VirtualService
+#metadata:
+#  name: db
+#spec:
+#  hosts:
+#  - "*"
+#  gateways:
+#  - db-gateway
+#  tcp:
+#  - match:
+#    - port: 3306
+#    route:
+#    - destination:
+#        host: backend
+#        port:
+#          number: 3306
