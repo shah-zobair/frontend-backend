@@ -1,6 +1,4 @@
-#FROM artifactory-qa.bmogc.net/rhel7
 FROM registry.access.redhat.com/rhel7
-#FROM openshift/rhel7
 
 
 RUN yum --disablerepo='*' --enablerepo=rhel-7-server-rpms --enablerepo=rhel-7-server-extras-rpms update -y && \

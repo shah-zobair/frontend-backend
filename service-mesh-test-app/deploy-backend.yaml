@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: image-registry.openshift-image-registry.svc:5000/openshift/backend
+        image: quay.io/szobair/backend
+        #image: image-registry.openshift-image-registry.svc:5000/openshift/backend
         imagePullPolicy: IfNotPresent
         env:
         - name: SERVICE_NAME

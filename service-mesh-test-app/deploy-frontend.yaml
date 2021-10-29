@@ -18,7 +18,8 @@ spec:
     spec:
       containers:
       - name: apache
-        image: image-registry.openshift-image-registry.svc:5000/openshift/frontend:v2
+        image: quay.io/szobair/frontend
+        #image: image-registry.openshift-image-registry.svc:5000/openshift/frontend:v2
         env:
         - name: SERVICE_NAME
           value: frontend
