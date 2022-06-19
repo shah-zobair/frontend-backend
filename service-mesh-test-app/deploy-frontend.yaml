@@ -16,7 +16,7 @@ spec:
         app: apache
         version: v1
     spec:
-    affinity:
+      affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:

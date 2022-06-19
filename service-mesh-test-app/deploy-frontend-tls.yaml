@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  selector:
+    matchLabels:
+      app: apache
+      version: v1
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: apache
+        version: v1
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: In
+                values:
+                - ""
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: apache
+        #image: quay.io/szobair/frontend
+        image: quay.io/szobair/apache-ssl-sm:v1
+        #image: image-registry.openshift-image-registry.svc:5000/openshift/frontend:v2
+        env:
+        - name: SERVICE_NAME
+          value: frontend
+        ports:
+        - containerPort: 8443
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: "200m"
+            memory: 250Mi
+        volumeMounts:
+        - mountPath: /certs
+          name: apache-cert
+      volumes:
+      - name: apache-cert
+        secret:
+          defaultMode: 400
+          secretName: apache-cert
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: apache
+    version: v1
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: apache-cert
+spec:
+  ports:
+  - port: 8443
+    name: http
+    targetPort: 8443
+  selector:
+    app: apache
+    version: v1
